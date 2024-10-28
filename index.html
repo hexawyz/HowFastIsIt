@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How Fast Is It</title>
+    <style>
+        body { padding: 0; margin: 0; font-family: sans-serif }
+        div.frame {
+            box-sizing: border-box;
+            width: 100vw;
+            height: 100vh;
+            padding: 20px;
+            text-align: center;
+            display: none;
+        }
+        div.frame.active { display: block }
+        div.frame>div { margin-top: 5px; margin-bottom: 5px }
+        div.frame table { margin: auto }
+        #f0 { background-color: #c44 }
+        #f1 { background-color: #4c4 }
+    </style>
+</head>
+<body>
+    <div id="f0" class="frame">
+        <p></p>
+        <div><button>Click Here</button></div>
+    </div>
+    <div id="f1" class="frame">
+        <div><label for="f1s">How long did you feel it took to display this?</label></div>
+        <div><select id="f1s"></select></div>
+        <div><button>Submit</button></div>
+    </div>
+    <div id="f2" class="frame">
+        <div>
+            <table>
+                <thead>
+                    <tr><td>Actual time</td><td>Evaluation</td></tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        <button>Reset</button>
+    </div>
+    <script>
+        ((w, d, m, p) => {
+            const o = ["Sluggish", "Slow", "Slightly Slow", "Fast", "Very Fast", "Instantaneous"]
+            const r = [0, 20, 50, 100, 150, 200, 250, 300, 350, 400, 1000, 2000]
+            let s = 0, e = true, t, c
+            const y = a => {
+                let c = a.length, r, t
+                const z = m.random;
+                while (c) {
+                    r = z() * c-- | 0
+                    t = a[c]
+                    a[c] = a[r]
+                    a[r] = t
+                }
+            }
+            const u = (n, t) => { const e = d.createElement(n); e.appendChild(d.createTextNode(t)); return e }
+            const g = g => f[g].classList.add("active")
+            const h = h => f[h].classList.remove("active")
+            const f = [0,1,2].map(n => d.getElementById(`f${n}`))
+            const q = f[0].querySelector("p")
+            const l = f[1].querySelector("select");
+            o.map((n, i) => { const o = u("option", n); o.value = i; return o })
+                .forEach(o => l.appendChild(o))
+            const x = () => {
+                function i() {
+                    s = 0
+                    t = []
+                    c = [...r]
+                    y(c)
+                    k(0)
+                }
+                function b(i) {
+                    if (!e) return
+                    const a = p.now();
+                    w.setTimeout(() => {
+                        const d = p.now() - a
+                        t.push({ d })
+                        l.value = "0"
+                        ++s
+                        h(0)
+                        g(1)
+                    }, c[i])
+                    e = !1
+                }
+                function k(i) {
+                    if (t.length > 0) t[t.length - 1].r = l.value
+                    e = !0
+                    ++s
+                    h(1)
+                    if (i < r.length) {
+                        q.replaceChildren(d.createTextNode(`Round ${i + 1}`))
+                        g(0)
+                    } else {
+                        f[2].querySelector("tbody").replaceChildren(...t.map(t => {
+                            const r = d.createElement("tr")
+                            r.appendChild(u("td", `${((100 * t.d | 0) / 100)}\xA0ms`))
+                            r.appendChild(u("td", o[+t.r]))
+                            return r
+                        }))
+                        g(2)
+                    }
+                }
+                function z() {
+                    s = 0
+                    h(2)
+                    i()
+                }
+                if (s == 0) i()
+                else if (s <= r.length << 1) (s & 1 ? b : k)(s >>> 1)
+                else if (s == r.length << 1) z()
+                else z()
+            }
+            f.forEach(f => f.querySelector("button").addEventListener("click", x))
+            x()
+        })(window, document, Math, performance);
+    </script>
+</body>
+</html>
